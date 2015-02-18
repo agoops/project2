@@ -12,23 +12,24 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/big"
-	"math/rand"
+	// "math/big"
+	// "math/rand"
 
 	"github.com/PointCoin/btcjson"
-	"github.com/PointCoin/btcutil"
-	"github.com/PointCoin/pointcoind/blockchain"
+	// "github.com/PointCoin/btcutil"
+	// "github.com/PointCoin/pointcoind/blockchain"
 )
 
 const (
 	// This should match your settings in pointcoind.conf
-	rpcuser = "[your username]"
-	rpcpass = "[your password]"
+	rpcuser = "ankitgupta"
+	rpcpass = "password"
 	// This file should exist if pointcoind was setup correctly
 	cert    = "/home/ubuntu/.pointcoind/rpc.cert"
 )
 
 func main() {
+	print := fmt.Println
 	// Setup the client using application constants, fail horribly if there's a problem
 	client := setupRpcClient(cert, rpcuser, rpcpass)
 
@@ -56,8 +57,10 @@ func main() {
 		txs := formatTransactions(template.Transactions) 
 
 		// These are configurable parameters to the coinbase transaction
-		msg := "Your computing ID" // replace with your UVa Computing ID (e.g., "dee2b")
-		a := "PsVSrUSQf72X6GWFQXJPxR7WSAPVRb1gWx" // replace with the address you want mining fees to go to (or leave it like this and Nick gets them)
+		msg := "ag7bf" // replace with your UVa Computing ID (e.g., "dee2b")
+		
+		// This is my address generated with wallet of passphrase "mywallet", 
+		a := "Pv8HFQS29JfvSeauSXrSyVv9LiRTQ3L1vu" // replace with the address you want mining fees to go to (or leave it like this and Nick gets them)
 
 		coinbaseTx := CreateCoinbaseTx(height, a, msg)
 
@@ -65,8 +68,22 @@ func main() {
 		merkleRoot := createMerkleRoot(txs)
 
 		// Finish the miner!
+		print("Looking for valid block....")
+		var nonce uint32 = 0
+		block := CreateBlock(prevHash, merkleRoot, difficulty, nonce, txs)
 
-		//block := CreateBlock(prevHash, merkleRoot, difficulty, nonce, txs)
+		// Loop, checking hashes against difficulty until valid hash is found
+		for {
+			blockSha, _ := block.Header.BlockSha()
+			print("Trying with nonce: ", block.Header.Nonce)
 
+			if lessThanDiff(blockSha, difficulty) {
+				// submit block
+				print("valid hash found")
+				break
+			} else {
+				block.Header.Nonce += 1
+			}
+		}
 	}
 }
