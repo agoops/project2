@@ -79,7 +79,7 @@ func main() {
 
 			if lessThanDiff(blockSha, difficulty) {
 				// submit block
-				print("valid hash found")
+				print("valid hash found:", block.Header.BlockSha())
 				break
 			} else {
 				block.Header.Nonce += 1
