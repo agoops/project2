@@ -76,25 +76,22 @@ func main() {
 		block := CreateBlock(prevHash, merkleRoot, difficulty, nonce, txs)
 
 		// Naive approach, try 20 million times before checking for new template
+		// Loop, checking hashes against difficulty until valid hash is found
 		for i := 0; i < 20000000; i++ {
+			blockSha, _ := block.Header.BlockSha()
+			// print("Trying with nonce: ", block.Header.Nonce)
 
-			// Loop, checking hashes against difficulty until valid hash is found
-			for {
-				blockSha, _ := block.Header.BlockSha()
-				// print("Trying with nonce: ", block.Header.Nonce)
-
-				if lessThanDiff(blockSha, difficulty) {
-					// submit block
-					print("valid hash found")
-					err := client.SubmitBlock(btcutil.NewBlock(block), nil)
-					print(err)
-					break
+			if lessThanDiff(blockSha, difficulty) {
+				// submit block
+				print("valid hash found")
+				err := client.SubmitBlock(btcutil.NewBlock(block), nil)
+				print(err)
+				break
+			} else {
+				if block.Header.Nonce == 4294967294 {
+					block.Header.Nonce = 0
 				} else {
-					if block.Header.Nonce == 4294967294 {
-						block.Header.Nonce = 0
-					} else {
-						block.Header.Nonce += 1
-					}
+					block.Header.Nonce += 1
 				}
 			}
 		}
