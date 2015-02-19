@@ -14,7 +14,7 @@ import (
 	"log"
 	// "math/big"
 	"math/rand"
-
+	"time"
 	"github.com/PointCoin/btcjson"
 	"github.com/PointCoin/btcutil"
 	// "github.com/PointCoin/pointcoind/blockchain"
@@ -69,28 +69,35 @@ func main() {
 
 		// Finish the miner!
 		print("Looking for valid block....")
-		var nonce uint32 = rand.Uint32();
+		source := rand.NewSource(time.Now().UnixNano())
+		myRand := rand.New(source)
+		var nonce uint32 = myRand.Uint32();
 
 		block := CreateBlock(prevHash, merkleRoot, difficulty, nonce, txs)
 
-		// Loop, checking hashes against difficulty until valid hash is found
-		for {
-			blockSha, _ := block.Header.BlockSha()
-			print("Trying with nonce: ", block.Header.Nonce)
+		// Naive approach, try 20 million times before checking for new template
+		for i := 0; i < 20000000; i++ {
 
-			if lessThanDiff(blockSha, difficulty) {
-				// submit block
-				print("valid hash found")
-				err := client.SubmitBlock(btcutil.NewBlock(block), nil)
-				print(err)
-				break
-			} else {
-				if block.Header.Nonce == 4294967294 {
-					block.Header.Nonce = 0
+			// Loop, checking hashes against difficulty until valid hash is found
+			for {
+				blockSha, _ := block.Header.BlockSha()
+				// print("Trying with nonce: ", block.Header.Nonce)
+
+				if lessThanDiff(blockSha, difficulty) {
+					// submit block
+					print("valid hash found")
+					err := client.SubmitBlock(btcutil.NewBlock(block), nil)
+					print(err)
+					break
 				} else {
-					block.Header.Nonce += 1
+					if block.Header.Nonce == 4294967294 {
+						block.Header.Nonce = 0
+					} else {
+						block.Header.Nonce += 1
+					}
 				}
 			}
 		}
+			
 	}
 }
