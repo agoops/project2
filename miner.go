@@ -13,10 +13,10 @@ import (
 	"fmt"
 	"log"
 	// "math/big"
-	// "math/rand"
+	"math/rand"
 
 	"github.com/PointCoin/btcjson"
-	// "github.com/PointCoin/btcutil"
+	"github.com/PointCoin/btcutil"
 	// "github.com/PointCoin/pointcoind/blockchain"
 )
 
@@ -60,7 +60,7 @@ func main() {
 		msg := "ag7bf" // replace with your UVa Computing ID (e.g., "dee2b")
 		
 		// This is my address generated with wallet of passphrase "mywallet", 
-		a := "Pv8HFQS29JfvSeauSXrSyVv9LiRTQ3L1vu" // replace with the address you want mining fees to go to (or leave it like this and Nick gets them)
+		a := "PcvNdeZ6UsC8R34NQqi9YyxKfSXQcjoWHy" // replace with the address you want mining fees to go to (or leave it like this and Nick gets them)
 
 		coinbaseTx := CreateCoinbaseTx(height, a, msg)
 
@@ -69,7 +69,8 @@ func main() {
 
 		// Finish the miner!
 		print("Looking for valid block....")
-		var nonce uint32 = 0
+		var nonce uint32 = rand.Uint32();
+
 		block := CreateBlock(prevHash, merkleRoot, difficulty, nonce, txs)
 
 		// Loop, checking hashes against difficulty until valid hash is found
@@ -79,10 +80,16 @@ func main() {
 
 			if lessThanDiff(blockSha, difficulty) {
 				// submit block
-				print("valid hash found:", block.Header.BlockSha())
+				print("valid hash found")
+				err := client.SubmitBlock(btcutil.NewBlock(block), nil)
+				print(err)
 				break
 			} else {
-				block.Header.Nonce += 1
+				if block.Header.Nonce == 4294967294 {
+					block.Header.Nonce = 0
+				} else {
+					block.Header.Nonce += 1
+				}
 			}
 		}
 	}
