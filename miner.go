@@ -12,11 +12,15 @@ package main
 import (
 	"fmt"
 	"log"
-	// "math/big"
 	"math/rand"
 	"time"
 	"github.com/PointCoin/btcjson"
+	"math/big"
 	"github.com/PointCoin/btcutil"
+	"github.com/PointCoin/btcwire"
+	"github.com/PointCoin/btcrpcclient"
+
+
 	// "github.com/PointCoin/pointcoind/blockchain"
 )
 
@@ -28,7 +32,60 @@ const (
 	cert    = "/home/ubuntu/.pointcoind/rpc.cert"
 )
 
-func main() {
+func GetClient() *btcrpcclient.Client {
+	return setupRpcClient(cert, rpcuser, rpcpass)
+}
+func GetTemplate(client *btcrpcclient.Client) *btcjson.GetBlockTemplateResult {
+
+	// Get a new block template from pointcoind.
+	log.Printf("Requesting a block template\n")
+	template, err := client.GetBlockTemplate(&btcjson.TemplateRequest{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return template
+}
+
+func SetUpBlock(template *btcjson.GetBlockTemplateResult) (*btcwire.MsgBlock, big.Int) {
+	// The hash of the previous block
+	prevHash := template.PreviousHash
+
+	// The difficulty target
+	difficulty := formatDiff(template.Bits)
+
+	// The height of the next block (number of blocks between genesis block and next block)
+	height := template.Height
+
+	// The transactions from the network	
+	txs := formatTransactions(template.Transactions) 
+
+	// These are configurable parameters to the coinbase transaction
+	msg := "ag7bf" // replace with your UVa Computing ID (e.g., "dee2b")
+	
+	// This is my address generated with wallet of passphrase "mywallet", 
+	// old miner address: PcvNdeZ6UsC8R34NQqi9YyxKfSXQcjoWHy
+	a := "Prxy397nCyskwHwmiv3TaFG6ZgZ88Cbnju" 
+
+	coinbaseTx := CreateCoinbaseTx(height, a, msg)
+
+	txs = prepend(coinbaseTx.MsgTx(), txs)
+	merkleRoot := createMerkleRoot(txs)
+
+	// Finish the miner!
+	// print("Looking for valid block....")
+	source := rand.NewSource(time.Now().UnixNano())
+	myRand := rand.New(source)
+	var nonce uint32 = myRand.Uint32();
+
+	block := CreateBlock(prevHash, merkleRoot, difficulty, nonce, txs)
+
+	return block, difficulty
+	
+}
+
+
+
+func mainn() {
 	print := fmt.Println
 	// Setup the client using application constants, fail horribly if there's a problem
 	client := setupRpcClient(cert, rpcuser, rpcpass)
@@ -40,6 +97,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
 
 		// The template returned by GetBlockTemplate provides these fields that 
 		// you will need to use to create a new block:
