@@ -53,6 +53,7 @@ func TemplateChecker(newTemplateChan chan bool, template *btcjson.GetBlockTempla
 		if prevHash != otherTemplate.PreviousHash {
 			fmt.Println("New Template, sending reset signal")
 			newTemplateChan <- true
+			return
 		}
 	}
 	
