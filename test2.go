@@ -45,11 +45,13 @@ func main() {
 
 func TemplateChecker(newTemplateChan chan bool, template *btcjson.GetBlockTemplateResult, client *btcrpcclient.Client) {
 	prevHash := template.PreviousHash
+	var sleepTime time.Duration = 30
 
 	for i := 0; i < 100000000; i++ {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * sleepTime)
 		otherTemplate := GetTemplate(client)
 		if prevHash != otherTemplate.PreviousHash {
+			fmt.Println("New Template, sending reset signal")
 			newTemplateChan <- true
 		}
 	}
@@ -57,8 +59,8 @@ func TemplateChecker(newTemplateChan chan bool, template *btcjson.GetBlockTempla
 }
 
 func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.MsgBlock, difficulty big.Int, client *btcrpcclient.Client) {
-	hashesThenCheck := 500000
-
+	hashesThenCheck := 1000000
+	loops := 0
 	for {
 		select {
 		case <- newTemplateChan:
@@ -71,7 +73,7 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 
 				if lessThanDiff(blockSha, difficulty) {
 					// submit block
-					print("valid hash found")
+					print("Valid hash found. Submitting.")
 					err := client.SubmitBlock(btcutil.NewBlock(block), nil)
 					print(err)
 					done <- true
@@ -84,7 +86,8 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 					}
 				}
 			}
-			fmt.Println(hashesThenCheck, "hashes done. Checking for new template")
+			loops += 1
+			fmt.Println(hashesThenCheck*loops, "hashes done. Checking for new template")
 		}
 
 	}
