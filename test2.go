@@ -69,7 +69,8 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 			done <- true
 			return
 		default:
-			timeStart := time.Now().Nanosecond()
+			timeStart := time.Now()
+			fmt.Println("time start: ", timeStart)
 			for i := 0; i < hashesThenCheck; i++ {
 				blockSha, _ := block.Header.BlockSha()
 
@@ -88,12 +89,10 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 					}
 				}
 			}
-			timeFinish := time.Now().Nanosecond()
-			elapsedTime := timeFinish - timeStart
+			elapsedTime := time.Now().Sub(timeStart)
+			fmt.Println("elapsedTime: ", elapsedTime)
+			fmt.Println("Hashes done: ", hashesThenCheck)
 
-			nanoSecondsPerHash := elapsedTime / hashesThenCheck
-
-			fmt.Println("nanoseconds per hash:", nanoSecondsPerHash)
 
 			loops += 1
 			fmt.Println(hashesThenCheck*loops, "hashes done. Checking for new template")
