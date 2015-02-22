@@ -2,9 +2,10 @@ package main
 
 import (
 	// "encoding/hex"
-	"fmt"
+	// "fmt"
 	"time"
 	"math/big"
+	"log"
 	"github.com/PointCoin/btcutil"
 	"github.com/PointCoin/btcwire"
 	"github.com/PointCoin/btcrpcclient"
@@ -45,13 +46,13 @@ func main() {
 
 func TemplateChecker(newTemplateChan chan bool, template *btcjson.GetBlockTemplateResult, client *btcrpcclient.Client) {
 	prevHash := template.PreviousHash
-	var sleepTime time.Duration = 30
+	var sleepTime time.Duration = 20
 
 	for i := 0; i < 100000000; i++ {
 		time.Sleep(time.Second * sleepTime)
 		otherTemplate := GetTemplate(client)
 		if prevHash != otherTemplate.PreviousHash {
-			fmt.Println("New Template, sending reset signal")
+			log.Printf("New Template, sending reset signal\n")
 			newTemplateChan <- true
 			return
 		}
@@ -60,12 +61,12 @@ func TemplateChecker(newTemplateChan chan bool, template *btcjson.GetBlockTempla
 }
 
 func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.MsgBlock, difficulty big.Int, client *btcrpcclient.Client) {
-	hashesThenCheck := 1000000
+	hashesThenCheck := 200000
 	loops := 0
 	for {
 		select {
 		case <- newTemplateChan:
-			fmt.Println("New Template detected before we found block. Resetting...")
+			log.Printf("New Template detected before we found block. Resetting...\n")
 			done <- true
 			return
 		default:
@@ -74,7 +75,7 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 
 				if lessThanDiff(blockSha, difficulty) {
 					// submit block
-					print("Valid hash found. Submitting.")
+					log.Printf("Valid hash found. Submitting.\n")
 					err := client.SubmitBlock(btcutil.NewBlock(block), nil)
 					print(err)
 					done <- true
@@ -88,7 +89,7 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 				}
 			}
 			loops += 1
-			fmt.Println(hashesThenCheck*loops, "hashes done. Checking for new template")
+			// fmt.Println(hashesThenCheck*loops, "hashes done. Checking for new template")
 		}
 
 	}
