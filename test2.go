@@ -60,7 +60,7 @@ func TemplateChecker(newTemplateChan chan bool, template *btcjson.GetBlockTempla
 }
 
 func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.MsgBlock, difficulty big.Int, client *btcrpcclient.Client) {
-	hashesThenCheck := 1000000
+	hashesThenCheck := 200000
 	loops := 0
 	for {
 		select {
@@ -69,8 +69,8 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 			done <- true
 			return
 		default:
-			timeStart := time.Now()
-			fmt.Println("time start: ", timeStart)
+			// timeStart := time.Now()
+			// fmt.Println("time start: ", timeStart)
 			for i := 0; i < hashesThenCheck; i++ {
 				blockSha, _ := block.Header.BlockSha()
 
@@ -89,13 +89,13 @@ func FindValidBlock(newTemplateChan chan bool, done chan bool, block *btcwire.Ms
 					}
 				}
 			}
-			elapsedTime := time.Now().Sub(timeStart)
-			fmt.Println("elapsedTime: ", elapsedTime)
-			fmt.Println("Hashes done: ", hashesThenCheck)
+			// elapsedTime := time.Now().Sub(timeStart)
+			// fmt.Println("elapsedTime: ", elapsedTime)
+			// fmt.Println("Hashes done: ", hashesThenCheck)
 
 
 			loops += 1
-			fmt.Println(hashesThenCheck*loops, "hashes done. Checking for new template")
+			// fmt.Println(hashesThenCheck*loops, "hashes done. Checking for new template")
 		}
 
 	}
