@@ -31,4 +31,15 @@ func main() {
     }
     fmt.Printf("result: %q\n", out.String())
     fmt.Printf(out.String())
+
+
+	decodecmd := exec.Command("pointctl", "decoderawtransaction", out.String())
+	var decodeout bytes.Buffer
+	decodecmd.Stdout = &decodeout
+	err = decodecmd.Run()
+	if err != nil {
+    	log.Fatal(err)
+    }
+    fmt.Println(out.String())
+
 }
