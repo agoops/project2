@@ -58,6 +58,6 @@ func main() {
     }
 	
 
-    fmt.Println(out2)
+    fmt.Println(out2.String())
 
 }
