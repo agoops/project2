@@ -4,7 +4,7 @@ import (
 	// "encoding/hex"
 	"fmt"
 	"os/exec"
-	"bytes"
+	// "bytes"
 	// "time"
 	// "math/big"
 	// "github.com/PointCoin/btcutil"
@@ -21,25 +21,24 @@ import (
 func main() {
 	// command = pointctl getrawtransaction d2011b19dea6e98ec8bf78bd224856e76b6a9c460bbb347e49adb3dcf457e548
 	txid := "d2011b19dea6e98ec8bf78bd224856e76b6a9c460bbb347e49adb3dcf457e548"
-	cmd := exec.Command("pointctl", "getrawtransaction", txid)
+	out, err := exec.Command("pointctl", "getrawtransaction", txid).Output()
+	s := string(out[:])
 	// cmd.Stdin = strings.NewReader("some input")
-	var out bytes.Buffer
-    cmd.Stdout = &out
-    err := cmd.Run()
+    // err := cmd.Run()
     if err != nil {
     	log.Fatal(err)
     }
-    fmt.Printf("result: %q\n", out.String())
-    fmt.Printf(out.String())
+    // fmt.Printf("result: %s\n", out)
+    fmt.Println(s)
 
 
-	decodecmd := exec.Command("pointctl", "decoderawtransaction", out.String())
-	var decodeout bytes.Buffer
-	decodecmd.Stdout = &decodeout
-	err = decodecmd.Run()
+	out, err = exec.Command("pointctl", "decoderawtransaction", s).Output()
+	s = string(out[:])
+
 	if err != nil {
     	log.Fatal(err)
     }
-    fmt.Println(out.String())
+
+    fmt.Println(out)
 
 }
