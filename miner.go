@@ -38,7 +38,7 @@ func GetClient() *btcrpcclient.Client {
 func GetTemplate(client *btcrpcclient.Client) *btcjson.GetBlockTemplateResult {
 
 	// Get a new block template from pointcoind.
-	log.Printf("Requesting a block template\n")
+	// log.Printf("Requesting a block template\n")
 	template, err := client.GetBlockTemplate(&btcjson.TemplateRequest{})
 	if err != nil {
 		log.Fatal(err)
