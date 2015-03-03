@@ -12,7 +12,7 @@ import (
 	// "github.com/PointCoin/btcrpcclient"
 	// "github.com/PointCoin/btcjson"
 	"strconv"
-	// "strings"
+	"strings"
 	// "regexp"
 	// "math/rand"
 	"log"
@@ -48,7 +48,8 @@ func main() {
     fmt.Println(out.String())
 
 
-	cmd2 := exec.Command("pointctl", "decoderawtransaction", out.String())
+	cmd2 := exec.Command("xargs", "pointctl", "decoderawtransaction")
+	cmd2.Stdin = strings.NewReader(out.String())
 	var out2 bytes.Buffer
     cmd2.Stdout = &out2
     err2 := cmd2.Run()
