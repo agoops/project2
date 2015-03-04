@@ -64,9 +64,9 @@ func main() {
 	case []interface{}:
 		for _, u := range vv {
 					j := u.(map[string]interface{})
-					vinTxid := j["txid"]
-					vinVout := j["vout"]
-					newVin := vin{txid: vinTxid.(string), vout: vinVout.(int)}
+					vinTxid := j["txid"].(string)
+					vinVout := int(j["vout"].(float64))
+					newVin := vin{txid: vinTxid, vout: vinVout}
 					vinList = append(vinList, newVin)
 		            // fmt.Println(i, u)
 		        }
