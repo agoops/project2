@@ -32,8 +32,12 @@ func main() {
 	
 	txid := "c1de1be883834d733d096b3e14674978459f111f90d9dfbc5a82c9fa20db60a7"
 	txdetails := getTransactionDetails(txid)
-	m := getTransactionJson(txdetails)
+	// m := getTransactionJson(txdetails)
+	txdetailsbytes := []byte(txdetails)
 
+	var f interface{}
+	_ = json.Unmarshal(txdetailsbytes, &f)
+	m := f.(map[string]interface{})
 	txidreturned  := m["txid"]
 	print("\n\ngot txid", txidreturned)
 
