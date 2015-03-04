@@ -97,8 +97,14 @@ func main() {
 			voutN := int(j["n"].(float64))
 
 			vScriptPubKey := j["scriptPubKey"].(map[string]interface{})
-			vAddresses := vScriptPubKey["addresses"].([]string)
-			newVout := vout{value: voutVal, n: voutN, addresses: vAddresses}
+			vAddresses := vScriptPubKey["addresses"].([]interface{})
+			vAddressesStrings := make([]string, 0)
+			for _,u := range vAddresses {
+				addr := u.(string)
+				vAddressesStrings = append(vAddressesStrings, addr)
+			}
+
+			newVout := vout{value: voutVal, n: voutN, addresses: vAddressesStrings}
 			voutList = append(voutList, newVout)
 		}
 	}
