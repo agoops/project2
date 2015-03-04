@@ -53,20 +53,20 @@ func main() {
 	// See input addresses of transaction as well as amounts
 	// For each vin, going to have to 
 
-	
-	// fmt.Println("Outputs")
-	// for i, x := range vinList {
-	// 	tx := getTransactionDetails(x.txid)
-	// 	txjs := getTransactionJson(tx)
-	// 	txvouts := getVoutList(txjs)
-	// 	for _, y := range txvouts {
 
-	// 		if y.n == x.vout {
-	// 			fmt.Println("\t[",i,"]",y.addresses[0],y.value)
-	// 			break
-	// 		}
-	// 	}
-	// }
+	fmt.Println("Outputs")
+	for i, x := range vinList {
+		tx := getTransactionDetails(x.txid)
+		txjs := getTransactionJson(tx)
+		txvouts := getVoutList(txjs)
+		for _, y := range txvouts {
+
+			if y.n == x.vout {
+				fmt.Println("\t[",i,"]",y.addresses[0],y.value)
+				break
+			}
+		}
+	}
 		// 1) Get tx, 
 		// 2) Get 'n'th output
 		// 3) Get address and amount of that output
@@ -82,6 +82,7 @@ func main() {
 
 
 type vin struct {
+	coinbase bool
     txid string
     vout  int
 }
@@ -100,11 +101,18 @@ func getVinList(m map[string]interface{}) ([]vin) {
 	case []interface{}:
 		for _, u := range vv {
 			j := u.(map[string]interface{})
-			vinTxid := j["txid"].(string)
-			vinVout := int(j["vout"].(float64))
-			newVin := vin{txid: vinTxid, vout: vinVout}
+			var newVin vin
+			if _,ok := j["coinbase"]; ok {
+				// this is a coinbase transaction w/ coinbase input
+				newVin = vin{coinbase:true, txid:"null", vout:0} 
+			} else {
+				vinTxid := j["txid"].(string)
+				vinVout := int(j["vout"].(float64))
+				newVin = vin{coinbase:false, txid: vinTxid, vout: vinVout}
+	            // fmt.Println(i, u)
+			}
 			vinList = append(vinList, newVin)
-            // fmt.Println(i, u)
+
         }
 		// print("yes matches")
 	default:
