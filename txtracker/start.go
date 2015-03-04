@@ -30,7 +30,7 @@ func main() {
 	// address: Prxy397nCyskwHwmiv3TaFG6ZgZ88Cbnju
 	// command = pointctl getrawtransaction c1de1be883834d733d096b3e14674978459f111f90d9dfbc5a82c9fa20db60a7
 	
-	txid := "c1de1be883834d733d096b3e14674978459f111f90d9dfbc5a82c9fa20db60a7"
+	txid := "1d3041413579eb08973bfbc76e769ad431c7ee470a8fe7977786b416fa219d4c"
 	txdetails := getTransactionDetails(txid)
 	// m := getTransactionJson(txdetails)
 	txdetailsbytes := []byte(txdetails)
@@ -56,6 +56,9 @@ func main() {
 
 	fmt.Println("Outputs")
 	for i, x := range vinList {
+		if x.coinbase == true{
+			continue
+		}
 		tx := getTransactionDetails(x.txid)
 		txjs := getTransactionJson(tx)
 		txvouts := getVoutList(txjs)
