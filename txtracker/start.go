@@ -37,26 +37,47 @@ func main() {
 	var f interface{}
 	_ = json.Unmarshal(txdetailsbytes, &f)
 	m := f.(map[string]interface{})
+	
 
-	for k, v := range m {
-	    switch vv := v.(type) {
-	    case string:
-	        fmt.Println(k, "is string", vv)
-	    case int:
-	        fmt.Println(k, "is int", vv)
-	    case []interface{}:
-	        fmt.Println(k, "is an array:")
-	        for i, u := range vv {
-	            fmt.Println(i, u)
-	        }
-	    default:
-	        fmt.Println(k, "is of a type I don't know how to handle")
-	    }
-	}
+	// for k, v := range m {
+	//     switch vv := v.(type) {
+	// 	    case string:
+	// 	        fmt.Println(k, "is string", vv)
+	// 	    case int:
+	// 	        fmt.Println(k, "is int", vv)
+	// 	    case []interface{}:
+	// 	        fmt.Println(k, "is an array:")
+	// 	        for i, u := range vv {
+	// 	            fmt.Println(i, u)
+	// 	        }
+	// 	    default:
+	// 	        fmt.Println(k, "is of a type I don't know how to handle")
+	// 	    }
+	// }
 
 	txidreturned  := m["txid"]
+
+	vinList := make([]vin,0)
+	vinJsonList := m["vin"]
+
+	switch vv := vinJsonList.(type) {
+	case []interface{}:
+		for i, u := range vv {
+		            fmt.Println(i, u)
+		        }
+	default:
+		print("nope didn't work")
+	}
+	
+	_ = vinList
 	print("\n\ngot txid", txidreturned)
 
+}
+
+
+type vin struct {
+    txid string
+    vout  int
 }
 
 func getTransactionDetails(txhash string) (string){
