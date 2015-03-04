@@ -59,8 +59,82 @@ func main() {
 	print("\n\ngot txid", txidreturned)
 
 
+	vinList := getVinList(m)
+	voutList := getVoutList(m)
 
+	_ , _ = vinList,voutList
 	// Given transaction json map, get list of vin's
+	// vinList := make([]vin,0)
+	// vinJsonList := m["vin"]
+
+	// switch vv := vinJsonList.(type) {
+	// case []interface{}:
+	// 	for _, u := range vv {
+	// 		j := u.(map[string]interface{})
+	// 		vinTxid := j["txid"].(string)
+	// 		vinVout := int(j["vout"].(float64))
+	// 		newVin := vin{txid: vinTxid, vout: vinVout}
+	// 		vinList = append(vinList, newVin)
+ //            // fmt.Println(i, u)
+ //        }
+	// 	// print("yes matches")
+	// default:
+	// 	print("nope didn't work")
+	// }
+
+	// print("vins:")
+	// for _,x := range vinList {
+	// 	print(x)
+	// }
+
+	// Given transaction json map, get list of vout's
+
+	// voutList := make([]vout,0)
+	// voutJsonList := m["vout"]
+
+	// switch oo := voutJsonList.(type) {
+	// case []interface{}:
+	// 	for _,u := range oo {
+	// 		j := u.(map[string]interface{})
+	// 		voutVal := j["value"].(float64)
+	// 		voutN := int(j["n"].(float64))
+
+	// 		vScriptPubKey := j["scriptPubKey"].(map[string]interface{})
+	// 		vAddresses := vScriptPubKey["addresses"].([]interface{})
+	// 		vAddressesStrings := make([]string, 0)
+	// 		for _,u := range vAddresses {
+	// 			addr := u.(string)
+	// 			vAddressesStrings = append(vAddressesStrings, addr)
+	// 		}
+
+	// 		newVout := vout{value: voutVal, n: voutN, addresses: vAddressesStrings}
+	// 		voutList = append(voutList, newVout)
+	// 	}
+	// }
+
+	// print("vouts:")
+	// for _,x := range voutList {
+	// 	print(x)
+	// }
+
+
+
+
+}
+
+
+type vin struct {
+    txid string
+    vout  int
+}
+
+type vout struct {
+	value float64
+	n int
+	addresses []string
+}
+
+func getVinList(m map[string]interface{}) ([]vin) {
 	vinList := make([]vin,0)
 	vinJsonList := m["vin"]
 
@@ -76,16 +150,18 @@ func main() {
         }
 		// print("yes matches")
 	default:
-		print("nope didn't work")
+		print("nope getVinList didn't work")
 	}
 
-	print("vins:")
+	fmt.Println("vins:")
 	for _,x := range vinList {
-		print(x)
+		fmt.Println(x)
 	}
+	return vinList
 
-	// Given transaction json map, get list of vout's
+}
 
+func getVoutList(m map[string] interface{}) ([]vout) {
 	voutList := make([]vout,0)
 	voutJsonList := m["vout"]
 
@@ -108,26 +184,12 @@ func main() {
 			voutList = append(voutList, newVout)
 		}
 	}
-	print("vouts:")
+
+	fmt.Println("vouts:")
 	for _,x := range voutList {
-		print(x)
+		fmt.Println(x)
 	}
-
-
-
-
-}
-
-
-type vin struct {
-    txid string
-    vout  int
-}
-
-type vout struct {
-	value float64
-	n int
-	addresses []string
+	return voutList
 }
 
 func getTransactionDetails(txhash string) (string){
