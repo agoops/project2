@@ -56,34 +56,59 @@ func main() {
 	// }
 
 	txidreturned  := m["txid"]
+	print("\n\ngot txid", txidreturned)
 
+
+
+	// Given transaction json map, get list of vin's
 	vinList := make([]vin,0)
 	vinJsonList := m["vin"]
 
 	switch vv := vinJsonList.(type) {
 	case []interface{}:
 		for _, u := range vv {
-					j := u.(map[string]interface{})
-					vinTxid := j["txid"].(string)
-					vinVout := int(j["vout"].(float64))
-					newVin := vin{txid: vinTxid, vout: vinVout}
-					vinList = append(vinList, newVin)
-		            // fmt.Println(i, u)
-		        }
+			j := u.(map[string]interface{})
+			vinTxid := j["txid"].(string)
+			vinVout := int(j["vout"].(float64))
+			newVin := vin{txid: vinTxid, vout: vinVout}
+			vinList = append(vinList, newVin)
+            // fmt.Println(i, u)
+        }
 		// print("yes matches")
 	default:
 		print("nope didn't work")
 	}
 
-	for x := range vinList {
+	print("vins:")
+	for _,x := range vinList {
 		print(x)
 	}
-	
+
+	// Given transaction json map, get list of vout's
+
+	voutList := make([]vout,0)
+	voutJsonList := m["vout"]
+
+	switch oo := voutJsonList.(type) {
+	case []interface{}:
+		for _,u := range oo {
+			j := u.(map[string]interface{})
+			voutVal := j["value"].(float64)
+			voutN := int(j["n"].(float64))
+
+			vScriptPubKey := j["scriptPubKey"].(map[string]interface{})
+			vAddresses := vScriptPubKey["addresses"].([]string)
+			newVout := vout{value: voutVal, n: voutN, addresses: vAddresses}
+			voutList = append(voutList, newVout)
+		}
+	}
+	print("vouts:")
+	for _,x := range voutList {
+		print(x)
+	}
 
 
 
-	_ = vinList
-	print("\n\ngot txid", txidreturned)
 
 }
 
@@ -91,6 +116,12 @@ func main() {
 type vin struct {
     txid string
     vout  int
+}
+
+type vout struct {
+	value float64
+	n int
+	addresses []string
 }
 
 func getTransactionDetails(txhash string) (string){
