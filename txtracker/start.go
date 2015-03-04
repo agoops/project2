@@ -52,19 +52,21 @@ func main() {
 
 	// See input addresses of transaction as well as amounts
 	// For each vin, going to have to 
-	fmt.Println("Outputs")
-	for i, x := range vinList {
-		tx := getTransactionDetails(x.txid)
-		txjs := getTransactionJson(tx)
-		txvouts := getVoutList(txjs)
-		for _, y := range txvouts {
 
-			if y.n == x.vout {
-				fmt.Println("\t[",i,"]",y.addresses[0],y.value)
-				break
-			}
-		}
-	}
+	
+	// fmt.Println("Outputs")
+	// for i, x := range vinList {
+	// 	tx := getTransactionDetails(x.txid)
+	// 	txjs := getTransactionJson(tx)
+	// 	txvouts := getVoutList(txjs)
+	// 	for _, y := range txvouts {
+
+	// 		if y.n == x.vout {
+	// 			fmt.Println("\t[",i,"]",y.addresses[0],y.value)
+	// 			break
+	// 		}
+	// 	}
+	// }
 		// 1) Get tx, 
 		// 2) Get 'n'th output
 		// 3) Get address and amount of that output
