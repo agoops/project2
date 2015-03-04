@@ -13,6 +13,7 @@ import (
 	// "github.com/PointCoin/btcjson"
 	"strconv"
 	"strings"
+	"encoding/json"
 	// "regexp"
 	// "math/rand"
 	"log"
@@ -59,5 +60,27 @@ func main() {
 	
 
     fmt.Println(out2.String())
+
+
+	var f interface{}
+	err = json.Unmarshal(out2.Bytes(), &f)
+	m := f.(map[string]interface{})
+
+	for k, v := range m {
+    switch vv := v.(type) {
+    case string:
+        fmt.Println(k, "is string", vv)
+    case int:
+        fmt.Println(k, "is int", vv)
+    case []interface{}:
+        fmt.Println(k, "is an array:")
+        for i, u := range vv {
+            fmt.Println(i, u)
+        }
+    default:
+        fmt.Println(k, "is of a type I don't know how to handle")
+    }
+}
+
 
 }
