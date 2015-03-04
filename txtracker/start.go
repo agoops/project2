@@ -181,9 +181,9 @@ func getTransactionDetails(txhash string) (string){
     if err2 != nil {
     	log.Fatal(err2)
     }
+    fmt.Println(out2.String())
 	
     return out2.String()
-    // fmt.Println(out2.String())
 }
 
 
