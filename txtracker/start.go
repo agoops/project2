@@ -37,7 +37,7 @@ func main() {
 	var f interface{}
 	_ = json.Unmarshal(txdetailsbytes, &f)
 	m := f.(map[string]interface{})
-	
+
 
 	// for k, v := range m {
 	//     switch vv := v.(type) {
@@ -62,13 +62,26 @@ func main() {
 
 	switch vv := vinJsonList.(type) {
 	case []interface{}:
-		for i, u := range vv {
-		            fmt.Println(i, u)
+		for _, u := range vv {
+					j := u.(map[string]interface{})
+					vinTxid := j["txid"]
+					vinVout := j["vout"]
+					newVin := vin{txid: vinTxid.(string), vout: vinVout.(int)}
+					vinList = append(vinList, newVin)
+		            // fmt.Println(i, u)
 		        }
+		// print("yes matches")
 	default:
 		print("nope didn't work")
 	}
+
+	for x := range vinList {
+		print(x)
+	}
 	
+
+
+
 	_ = vinList
 	print("\n\ngot txid", txidreturned)
 
