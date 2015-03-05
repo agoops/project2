@@ -23,6 +23,7 @@ import (
 func main() {
 
 	print := fmt.Println
+	print("\n\n")
 	var txdetails string
 	for {
 		var inputTx string
@@ -141,10 +142,10 @@ func getVinList(m map[string]interface{}) ([]vin) {
 		print("nope getVinList didn't work")
 	}
 
-	fmt.Println("vins:")
-	for _,x := range vinList {
-		fmt.Println(x)
-	}
+	// fmt.Println("vins:")
+	// for _,x := range vinList {
+	// 	fmt.Println(x)
+	// }
 	return vinList
 
 }
