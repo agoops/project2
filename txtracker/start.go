@@ -39,7 +39,7 @@ func main() {
 	_ = json.Unmarshal(txdetailsbytes, &f)
 	m := f.(map[string]interface{})
 	txidreturned  := m["txid"]
-	print("\n\ngot txid", txidreturned)
+	print("\n\nTransaction ID:", txidreturned)
 
 	vinList := getVinList(m)
 	voutList := getVoutList(m)
@@ -54,9 +54,10 @@ func main() {
 	// For each vin, going to have to 
 
 
-	fmt.Println("Outputs")
+	fmt.Println("From:")
 	for i, x := range vinList {
 		if x.coinbase == true{
+			print ("\t[" + string(i) + "] Coinbase Transaction (10.0 PTC)")
 			continue
 		}
 		tx := getTransactionDetails(x.txid)
@@ -69,6 +70,11 @@ func main() {
 				break
 			}
 		}
+	}
+
+	fmt.Println("\nTo:")
+	for i, x := range voutList {
+		fmt.Println("\t[" + string(i) + "] " + x.addresses[0] + " (" + FloatToString(x.value) + " PTC)" )
 	}
 		// 1) Get tx, 
 		// 2) Get 'n'th output
@@ -83,7 +89,10 @@ func main() {
 
 }
 
-
+type transaction  struct {
+	vins []vin
+	vouts []vout
+}
 type vin struct {
 	coinbase bool
     txid string
@@ -196,6 +205,13 @@ func getTransactionDetails(txhash string) (string){
 	
     return out2.String()
 }
+
+func FloatToString(input_num float64) string {
+    // to convert a float number to a string
+    return strconv.FormatFloat(input_num, 'f', -1, 64)
+}
+
+
 
 
 
