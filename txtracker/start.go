@@ -1,3 +1,6 @@
+// This must be run on a computer with pointcoind running and pointctl installed
+
+
 package main
 
 import (
