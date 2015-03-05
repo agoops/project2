@@ -21,16 +21,19 @@ import (
 
 
 func main() {
+
 	print := fmt.Println
+	var txdetails string
+	for {
+		var inputTx string
+		fmt.Printf("%s", "Enter tx hash: ")
+		fmt.Scanf("%s", &inputTx)
 
-	// address: Prxy397nCyskwHwmiv3TaFG6ZgZ88Cbnju
-	// command = pointctl getrawtransaction c1de1be883834d733d096b3e14674978459f111f90d9dfbc5a82c9fa20db60a7
-	var inputTx string
-	fmt.Printf("%s", "Enter tx hash: ")
-	fmt.Scanf("%s", &inputTx)
-
-	txdetails := getTransactionDetails(inputTx)
-
+		txdetails = getTransactionDetails(inputTx)
+		if txdetails != "no" {
+			break
+		}
+	}
 	for {
 		txdetailsbytes := []byte(txdetails)
 		var f interface{}
@@ -42,23 +45,19 @@ func main() {
 		vinList := getVinList(m)
 		voutList := getVoutList(m)
 
-		// Start with transaction
-
-		// See input addresses of transaction as well as amounts
-		// For each vin, going to have to 
-
 		prevOutputs := make([]string, 0)
 
 		fmt.Println("From:")
 		for i, x := range vinList {
 			index := strconv.Itoa(i)
+
 			if x.coinbase == true{
 				print ("\t[" + string(index) + "] Coinbase Transaction (10 PTC)")
+				prevOutputs = append(prevOutputs, "coinbase")
 				continue
 			}
 			tx := getTransactionDetails(x.txid)
 			prevOutputs = append(prevOutputs, tx)
-
 			txjs := getTransactionJson(tx)
 			txvouts := getVoutList(txjs)
 			for _, y := range txvouts {
@@ -77,10 +76,13 @@ func main() {
 		}
 		
 
-		fmt.Printf("Enter index of \"From\" address to see output tx:")
-		var nextIndex int
-		fmt.Scanf("%s", &nextIndex)
+		nextIndex := getIndexInput(len(prevOutputs),"\nEnter index of \"From\" address to see output tx:")
+		savedDetails := txdetails
 		txdetails = prevOutputs[nextIndex]
+		if txdetails == "coinbase" {
+			fmt.Println("Oh you think Pointcoin is your ally, but you merely adopted the pointcoin. This coinbase transaction was born in it. Molded by it.")
+			txdetails = savedDetails
+		}
 
 	}
 
@@ -101,6 +103,18 @@ type vout struct {
 	addresses []string
 }
 
+func getIndexInput(size int, msg string)(int) {
+	for {
+		fmt.Printf("%s", msg)
+		var nextIndex int
+		fmt.Scanf("%s", &nextIndex)
+		if nextIndex < 0 || nextIndex >= size {
+			fmt.Println("Invalid index")
+			continue
+		}
+		return nextIndex
+	}
+}
 func getVinList(m map[string]interface{}) ([]vin) {
 	vinList := make([]vin,0)
 	vinJsonList := m["vin"]
@@ -183,10 +197,10 @@ func getTransactionDetails(txhash string) (string){
     cmd.Stdout = &out
     err := cmd.Run()
     if err != nil {
-    	log.Fatal(err)
+    	fmt.Println("Invalid ash or no Connection to pointcoind. Try again.")
+    	return "no"
+    	// log.Fatal(err)
     }
-    // fmt.Printf("result: %s\n", out)
-    // fmt.Println(out.String())
 
 
 	cmd2 := exec.Command("xargs", "pointctl", "decoderawtransaction")
