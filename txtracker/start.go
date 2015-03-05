@@ -56,8 +56,9 @@ func main() {
 
 	fmt.Println("From:")
 	for i, x := range vinList {
+		index := strconv.Itoa(i)
 		if x.coinbase == true{
-			print ("\t[" + string(i) + "] Coinbase Transaction (10.0 PTC)")
+			print ("\t[" + string(index) + "] Coinbase Transaction (10 PTC)")
 			continue
 		}
 		tx := getTransactionDetails(x.txid)
@@ -66,7 +67,7 @@ func main() {
 		for _, y := range txvouts {
 
 			if y.n == x.vout {
-				fmt.Println("\t[",i,"]",y.addresses[0],y.value)
+				fmt.Println("\t[",index,"]",y.addresses[0],y.value)
 				break
 			}
 		}
@@ -74,7 +75,8 @@ func main() {
 
 	fmt.Println("\nTo:")
 	for i, x := range voutList {
-		fmt.Println("\t[" + string(i) + "] " + x.addresses[0] + " (" + FloatToString(x.value) + " PTC)" )
+		index := strconv.Itoa(i)
+		fmt.Println("\t[" + string(index) + "] " + x.addresses[0] + " (" + FloatToString(x.value) + " PTC)" )
 	}
 		// 1) Get tx, 
 		// 2) Get 'n'th output
