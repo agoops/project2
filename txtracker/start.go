@@ -22,71 +22,70 @@ import (
 
 func main() {
 	print := fmt.Println
-	s := "\"Hello\""
-	fmt.Println(s)
 
-	o,_ := strconv.Unquote(s)
-	fmt.Println(o)
 	// address: Prxy397nCyskwHwmiv3TaFG6ZgZ88Cbnju
 	// command = pointctl getrawtransaction c1de1be883834d733d096b3e14674978459f111f90d9dfbc5a82c9fa20db60a7
-	
+	var inputTx string
+	fmt.Printf("%s,", "Enter tx hash")
+	fmt.Scanf("%s", &inputTx)
+
 	txid := "1d3041413579eb08973bfbc76e769ad431c7ee470a8fe7977786b416fa219d4c"
 	txdetails := getTransactionDetails(txid)
-	// m := getTransactionJson(txdetails)
-	txdetailsbytes := []byte(txdetails)
-
-	var f interface{}
-	_ = json.Unmarshal(txdetailsbytes, &f)
-	m := f.(map[string]interface{})
-	txidreturned  := m["txid"]
-	print("\n\nTransaction ID:", txidreturned)
-
-	vinList := getVinList(m)
-	voutList := getVoutList(m)
-
-	_ , _ = vinList,voutList
+	
 
 
+	for {
+		txdetailsbytes := []byte(txdetails)
+		var f interface{}
+		_ = json.Unmarshal(txdetailsbytes, &f)
+		m := f.(map[string]interface{})
+		txidreturned  := m["txid"]
+		print("\n\nTransaction ID:", txidreturned)
 
-	// Start with transaction
+		vinList := getVinList(m)
+		voutList := getVoutList(m)
 
-	// See input addresses of transaction as well as amounts
-	// For each vin, going to have to 
+		// Start with transaction
 
+		// See input addresses of transaction as well as amounts
+		// For each vin, going to have to 
 
-	fmt.Println("From:")
-	for i, x := range vinList {
-		index := strconv.Itoa(i)
-		if x.coinbase == true{
-			print ("\t[" + string(index) + "] Coinbase Transaction (10 PTC)")
-			continue
-		}
-		tx := getTransactionDetails(x.txid)
-		txjs := getTransactionJson(tx)
-		txvouts := getVoutList(txjs)
-		for _, y := range txvouts {
+		prevOutputs := make([]string, 0)
 
-			if y.n == x.vout {
-				fmt.Println("\t[",index,"]",y.addresses[0],y.value)
-				break
+		fmt.Println("From:")
+		for i, x := range vinList {
+			index := strconv.Itoa(i)
+			if x.coinbase == true{
+				print ("\t[" + string(index) + "] Coinbase Transaction (10 PTC)")
+				continue
+			}
+			tx := getTransactionDetails(x.txid)
+			prevOutputs = append(prevOutputs, tx)
+
+			txjs := getTransactionJson(tx)
+			txvouts := getVoutList(txjs)
+			for _, y := range txvouts {
+
+				if y.n == x.vout {
+					fmt.Println("\t[",index,"]",y.addresses[0],y.value)
+					break
+				}
 			}
 		}
+
+		fmt.Println("To:")
+		for i, x := range voutList {
+			index := strconv.Itoa(i)
+			fmt.Println("\t[" + string(index) + "] " + x.addresses[0] + " (" + FloatToString(x.value) + " PTC)" )
+		}
+		
+
+		fmt.Printf("Enter index of \"From\" address to see the tx where it was the output:")
+		var nextIndex int
+		fmt.Scanf("%s", &nextIndex)
+		txdetails = prevOutputs[nextIndex]
+
 	}
-
-	fmt.Println("\nTo:")
-	for i, x := range voutList {
-		index := strconv.Itoa(i)
-		fmt.Println("\t[" + string(index) + "] " + x.addresses[0] + " (" + FloatToString(x.value) + " PTC)" )
-	}
-		// 1) Get tx, 
-		// 2) Get 'n'th output
-		// 3) Get address and amount of that output
-
-
-	// See output addresses as well as amounts
-	// For each vout
-		// 1)Print address and amount
-
 
 
 }
