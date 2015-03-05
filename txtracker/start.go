@@ -64,7 +64,7 @@ func main() {
 			for _, y := range txvouts {
 
 				if y.n == x.vout {
-					fmt.Println("\t[",index,"]",y.addresses[0],y.value)
+					fmt.Println("\t[" + string(index) + "]",y.addresses[0], "(" + FloatToString(y.value) + " PTC)")
 					break
 				}
 			}
@@ -86,6 +86,8 @@ func main() {
 
 
 }
+
+
 
 type vin struct {
 	coinbase bool
@@ -157,10 +159,10 @@ func getVoutList(m map[string] interface{}) ([]vout) {
 		}
 	}
 
-	fmt.Println("vouts:")
-	for _,x := range voutList {
-		fmt.Println(x)
-	}
+	// fmt.Println("vouts:")
+	// for _,x := range voutList {
+	// 	fmt.Println(x)
+	// }
 	return voutList
 }
 
@@ -195,7 +197,7 @@ func getTransactionDetails(txhash string) (string){
     if err2 != nil {
     	log.Fatal(err2)
     }
-    fmt.Println(out2.String())
+    // fmt.Println(out2.String())
 	
     return out2.String()
 }
