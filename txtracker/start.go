@@ -26,13 +26,10 @@ func main() {
 	// address: Prxy397nCyskwHwmiv3TaFG6ZgZ88Cbnju
 	// command = pointctl getrawtransaction c1de1be883834d733d096b3e14674978459f111f90d9dfbc5a82c9fa20db60a7
 	var inputTx string
-	fmt.Printf("%s,", "Enter tx hash")
+	fmt.Printf("%s", "Enter tx hash: ")
 	fmt.Scanf("%s", &inputTx)
 
-	txid := "1d3041413579eb08973bfbc76e769ad431c7ee470a8fe7977786b416fa219d4c"
-	txdetails := getTransactionDetails(txid)
-	
-
+	txdetails := getTransactionDetails(inputTx)
 
 	for {
 		txdetailsbytes := []byte(txdetails)
@@ -80,7 +77,7 @@ func main() {
 		}
 		
 
-		fmt.Printf("Enter index of \"From\" address to see the tx where it was the output:")
+		fmt.Printf("Enter index of \"From\" address to see output tx:")
 		var nextIndex int
 		fmt.Scanf("%s", &nextIndex)
 		txdetails = prevOutputs[nextIndex]
@@ -90,10 +87,6 @@ func main() {
 
 }
 
-type transaction  struct {
-	vins []vin
-	vouts []vout
-}
 type vin struct {
 	coinbase bool
     txid string
