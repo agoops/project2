@@ -108,7 +108,8 @@ func getIndexInput(size int, msg string)(int) {
 	for {
 		fmt.Printf("%s", msg)
 		var nextIndex int
-		fmt.Scanf("%s", &nextIndex)
+		fmt.Scanf("%d", &nextIndex)
+		// fmt.Println(nextIndex)
 		if nextIndex < 0 || nextIndex >= size {
 			fmt.Println("Invalid index")
 			continue
